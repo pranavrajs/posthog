@@ -14,7 +14,8 @@ services:
         ports:
             - '6379:6379'
     clickhouse:
-        image: yandex/clickhouse-server
+        build:
+            context: ./docker/clickhouse/
         depends_on:
             - kafka
             - zookeeper
@@ -28,15 +29,16 @@ services:
             - ./docker/clickhouse/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
             - ./docker/clickhouse/config.xml:/etc/clickhouse-server/config.xml
     zookeeper:
-        image: wurstmeister/zookeeper
+        image: zookeeper
     kafka:
-        image: wurstmeister/kafka
+        build:
+            context: ./docker/kafka/
         depends_on:
             - zookeeper
         ports:
             - '9092:9092'
         environment:
-            KAFKA_ADVERTISED_HOST_NAME: kafka
+            KAFKA_ADVERTISED_HOST_NAME: localhost
             KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     worker: &worker
         build:
