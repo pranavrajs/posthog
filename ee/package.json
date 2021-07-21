@@ -1,0 +1,19 @@
+{
+    "name": "posthog-ee",
+    "description": "Scripts to start EE services",
+    "private": true,
+    "license": "PostHog Entrepirse License",
+    "scripts": {
+        "services": "if uname -a | grep arm64; then yarn services:arm64; else yarn services:intel; fi",
+        "services:arm64": "yarn services:arm64:stop && yarn services:arm64:clean && yarn services:arm64:start",
+        "services:intel": "yarn services:intel:stop && yarn services:intel:clean && yarn services:intel:start",
+        "services:arm64:start": "cd .. && docker compose -f ee/docker-compose.ch.arm64.yml up zookeeper kafka clickhouse",
+        "services:arm64:stop": "cd .. && docker compose -f ee/docker-compose.ch.arm64.yml down",
+        "services:arm64:clean": "cd .. && docker compose -f ee/docker-compose.ch.arm64.yml rm -v zookeeper kafka clickhouse && docker volume prune -f",
+        "services:intel:start": "cd .. && docker compose -f ee/docker-compose.ch.yml up zookeeper kafka clickhouse",
+        "services:intel:stop": "cd .. && docker compose -f ee/docker-compose.ch.yml down",
+        "services:intel:clean": "cd .. && docker compose -f ee/docker-compose.ch.yml rm -v zookeeper kafka clickhouse && docker volume prune -f",
+        "migrate:clickhouse": "cd .. && export DEBUG=1 PRIMARY_DB=clickhouse && source env/bin/activate && python manage.py migrate_clickhouse",
+        "migrate:clickhouse:test": "cd .. && export TEST=1 PRIMARY_DB=clickhouse CLICKHOUSE_DATABASE=posthog_test && source env/bin/activate && python manage.py migrate_clickhouse"
+    }
+}
